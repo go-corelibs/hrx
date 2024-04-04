@@ -4,8 +4,8 @@ go 1.21.6
 
 require (
 	github.com/go-corelibs/path v1.3.0
-	github.com/go-corelibs/scanners v1.0.0
-	github.com/go-corelibs/slices v1.4.0
+	github.com/go-corelibs/scanners v1.1.0
+	github.com/go-corelibs/slices v1.5.0
 	github.com/go-corelibs/tdata v1.0.0
 	github.com/smartystreets/goconvey v1.8.1
 )

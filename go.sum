@@ -10,10 +10,10 @@ github.com/go-corelibs/maths v1.0.1 h1:gwBRTJSfEnwXEttf3fCqyL2l7x6HML5Y07cO6WleD
 github.com/go-corelibs/maths v1.0.1/go.mod h1:AGg83e+nOjEqCvfrwDMGTu/DvSrs0bWLZ1IZc/fN5RM=
 github.com/go-corelibs/path v1.3.0 h1:5Yof0tc74MeyGWK/ytdom/sorqS3644su8JaMvphgnw=
 github.com/go-corelibs/path v1.3.0/go.mod h1:wc2Z328iLGtFZYYAiIhUWpishilhNy4aZcAipqsX2LA=
-github.com/go-corelibs/scanners v1.0.0 h1:7ifdwBOD1tMGwO3ixPDCZ7OZCrtjD12F9qD+BuKm2I0=
-github.com/go-corelibs/scanners v1.0.0/go.mod h1:JPqWe8VexXdaoVSsoxHVGG2nevCOkfDkKH+2Rj21VmY=
-github.com/go-corelibs/slices v1.4.0 h1:Z2Bguav1goQRYY6RkvCyvWzRErCUjmy2GBTZkLs5YJE=
-github.com/go-corelibs/slices v1.4.0/go.mod h1:bpEP0I/j/W7ckYJbzvPZ7pUAC89wSGkvZGzhAr50wSA=
+github.com/go-corelibs/scanners v1.1.0 h1:JzZNWWWD+eFG9AT7oDNr2Gikp1F7/UzENAR1JaOVEcI=
+github.com/go-corelibs/scanners v1.1.0/go.mod h1:JPqWe8VexXdaoVSsoxHVGG2nevCOkfDkKH+2Rj21VmY=
+github.com/go-corelibs/slices v1.5.0 h1:YzJu2bH3gOnK3Dru4qaUiJdRlTlf5l+rCvzExLP9QtI=
+github.com/go-corelibs/slices v1.5.0/go.mod h1:bpEP0I/j/W7ckYJbzvPZ7pUAC89wSGkvZGzhAr50wSA=
 github.com/go-corelibs/tdata v1.0.0 h1:8/jpJf9/zP3RF0UORcFo13F/R5PuNXt6ZsuiZaydS3I=
 github.com/go-corelibs/tdata v1.0.0/go.mod h1:NUsYnC6ft4fJ5NUy9Rve15xRT/G3vSqrMCFbeMDFby8=
 github.com/gopherjs/gopherjs v1.17.2 h1:fQnZVsXk8uxXIStYb0N4bGk7jeyTalG/wsZjQ25dO0g=
