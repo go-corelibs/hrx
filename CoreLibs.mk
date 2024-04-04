@@ -4,7 +4,7 @@ SHELL := /bin/bash
 
 VERSION_TAGS        += CORELIBS
 CORELIBS_MK_SUMMARY := Go-CoreLibs.mk
-CORELIBS_MK_VERSION := v0.1.15
+CORELIBS_MK_VERSION := v0.1.16
 
 GOPKG_KEYS          ?=
 GOPKG_AUTO_CORELIBS ?= true
@@ -39,16 +39,13 @@ $(call __list_gopkgs,@latest)
 endef
 
 define __list_corelibs
-$(shell grep -h -v '^module' go.mod \
-		| grep -P '^(require)?\s*github.com/go-corelibs/' \
-		| grep -v "github.com/${CORELIB_PKG} v" \
-		| grep -v "// indirect" \
-		| perl -pe 's!^(require)?\s*!!;s!\s+v\d+(.\d)*.*$$!!;' \
+$(shell find * \
+		-name "*.go" -exec grep '"github.com/go-corelibs/' \{\} \; \
+		| perl -pe 's!^[^"]*!!;s![\s"]!!g;s!github\.com/go-corelibs/!!;s!$$!\n!;' \
 		| sort -u -V \
-		| while read MODULE; do \
-			NAME=$$(basename "$${MODULE}"); \
+		| while read NAME; do \
 			if [ -d "${LOCAL_CORELIBS_PATH}/$${NAME}" ]; then \
-				echo "$${MODULE}$(1)"; \
+				echo "github.com/go-corelibs/$${NAME}$(1)"; \
 			fi; \
 	done)
 endef
