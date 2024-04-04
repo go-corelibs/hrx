@@ -35,6 +35,16 @@ func TestSpec(t *testing.T) {
 
 			contents := TD.F(hrxname)
 
+			if TD.E(errname) {
+				Convey("[error] "+srcname, func() {
+					a, err := ParseData(hrxname, contents)
+					So(err, ShouldNotBeNil)
+					So(a, ShouldBeNil)
+					So(err.Error(), ShouldEqual, strings.TrimSpace(TD.F(errname)))
+				})
+				continue
+			}
+
 			if TD.E(srcname) {
 
 				// valid case testing
@@ -87,13 +97,7 @@ func TestSpec(t *testing.T) {
 					}
 				})
 
-			} else if TD.E(errname) {
-				Convey("[error] "+srcname, func() {
-					a, err := ParseData(hrxname, contents)
-					So(err, ShouldNotBeNil)
-					So(a, ShouldBeNil)
-					So(err.Error(), ShouldEqual, strings.TrimSpace(TD.F(errname)))
-				})
+				continue
 			}
 
 		}
