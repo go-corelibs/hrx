@@ -25,32 +25,7 @@ import (
 	"github.com/go-corelibs/tdata"
 )
 
-var (
-	TD tdata.TestData
-)
-
-var (
-	gTestDataPath  string
-	gTestDataFiles []string
-)
-
-func setupTD() {
-	if TD != nil {
-		return
-	}
-	TD = tdata.New()
-	gTestDataPath = TD.Path()
-	if found := TD.L("."); len(found) > 0 {
-		for _, filename := range found {
-			if strings.HasSuffix(filename, ".hrx") {
-				gTestDataFiles = append(gTestDataFiles, strings.TrimPrefix(filename, gTestDataPath+"/"))
-			}
-		}
-	}
-}
-
 func TestBase(t *testing.T) {
-	setupTD()
 
 	Convey("Archive Operations", t, func() {
 

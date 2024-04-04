@@ -23,7 +23,6 @@ import (
 )
 
 func TestSpec(t *testing.T) {
-	setupTD()
 
 	Convey("HRX Specification", t, func() {
 
