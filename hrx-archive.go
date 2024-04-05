@@ -404,8 +404,12 @@ func (a *archive) WriteFile(destination string) (err error) {
 	if fh, err = os.OpenFile(destination, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, perms); err == nil {
 		defer fh.Close()
 		var contents string
-		for _, item := range a.entries {
+		last := a.Len() - 1
+		for idx, item := range a.entries {
 			contents += item.String()
+			if (idx < last || a.comment != nil) && item.IsFile() {
+				contents += "\n"
+			}
 		}
 		if a.comment != nil {
 			comment := newBoundary(a.boundary, "")
