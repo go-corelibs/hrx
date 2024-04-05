@@ -272,6 +272,12 @@ func TestBase(t *testing.T) {
 			So(a, ShouldNotBeNil)
 			outfile := tempdir.Join("testing.hrx")
 			So(a.WriteFile(outfile), ShouldBeNil)
+			var data []byte
+			data, err = os.ReadFile(outfile)
+			So(err, ShouldBeNil)
+			// test if this new archive is correct (identical to input data)
+			So(string(data), ShouldEqual, tEntryHRX)
+			// test permission retention
 			So(os.Chmod(outfile, 0640), ShouldBeNil)
 			a, err = ParseData("testing.hrx", tSetBoundaryHRX)
 			So(err, ShouldBeNil)
