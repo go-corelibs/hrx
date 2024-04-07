@@ -34,6 +34,7 @@ func TestBase(t *testing.T) {
 			ee := a.SetBoundary(4)
 			So(ee, ShouldBeNil)
 			So(a, ShouldNotBeNil)
+			So(a.FileName(), ShouldEqual, "comment.hrx")
 			comment, ok := a.GetComment()
 			So(comment, ShouldEqual, "initial comment")
 			So(ok, ShouldBeTrue)

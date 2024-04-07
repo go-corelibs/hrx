@@ -62,6 +62,8 @@ const (
 
 // Archive is a computer-readable parsing of a human-readable archive
 type Archive interface {
+	// FileName is the filename given when constructing this Archive instance
+	FileName() (filename string)
 	// SetBoundary changes this archive's boundary to the size given and if
 	// there are any nested archives within this archive, they are all updated
 	// with nested increments of the size given
@@ -159,6 +161,10 @@ func newArchive(filename, comment string) *archive {
 
 func (a *archive) error(line, offset int, wrap, base error) (err error) {
 	return newError(a.filename, line, wrap, base)
+}
+
+func (a *archive) FileName() (filename string) {
+	return a.srcPath
 }
 
 func (a *archive) SetBoundary(size int) (err error) {
