@@ -15,7 +15,6 @@
 package hrx
 
 import (
-	"io"
 	"os"
 	"path/filepath"
 	"sync"
@@ -156,36 +155,6 @@ func newArchive(filename, comment string) *archive {
 		a.comment = &comment
 	}
 	return a
-}
-
-func parseData[V string | []byte | []rune](filename string, data V) (hrx *archive, err error) {
-	a := newArchive(filename, "")
-	if err = a.parseString(string(data)); err != nil {
-		return
-	}
-	hrx = a
-	return
-}
-
-func parseReader(filename string, reader io.Reader) (hrx *archive, err error) {
-	a := newArchive(filename, "")
-	if err = a.parseReader(reader); err != nil {
-		return
-	}
-	hrx = a
-	return
-}
-
-func parseFile(path string) (hrx *archive, err error) {
-	var fh *os.File
-	if fh, err = os.OpenFile(path, os.O_RDONLY, 0640); err == nil {
-		defer fh.Close()
-		a := newArchive(filepath.Base(path), "")
-		if err = a.parseReader(fh); err == nil {
-			hrx = a
-		}
-	}
-	return
 }
 
 func (a *archive) error(line, offset int, wrap, base error) (err error) {
