@@ -103,7 +103,7 @@ func (a *archive) parseReader(reader io.Reader) (err error) {
 		}
 
 		// this is not a new entry
-		this.AppendBody(content)
+		this.appendBody(content)
 		if _, nextBoundary, _, nextIsHeader, _, ok := s.Peek(); ok && a.parseReaderPeekTrimNLCheck(this, nextBoundary, nextIsHeader) {
 			// last newline is a part of the next boundary
 			*this.body = strings.TrimSuffix(*this.body, "\n")

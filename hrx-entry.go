@@ -213,7 +213,7 @@ func (e *entry) String() (data string) {
 	return
 }
 
-func (e *entry) AppendBody(content string) {
+func (e *entry) appendBody(content string) {
 	if e.body == nil {
 		e.body = &content
 	} else {
