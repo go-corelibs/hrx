@@ -27,6 +27,9 @@ type Entry interface {
 	// IsFile reports true when the boundary pathname is not empty and does not
 	// end with a directory separator
 	IsFile() bool
+	// Size returns zero and false for directories and for comments and
+	// files, returns the number of bytes and true
+	Size() (size int, ok bool)
 	// IsDir reports true when the boundary pathname is not empty and ends with
 	// a directory separator
 	IsDir() bool
@@ -99,6 +102,15 @@ func newEntry(line, boundary int, pathname, body string, err error) (e *entry) {
 		e.body = &body
 	}
 	return e
+}
+
+func (e *entry) Size() (size int, ok bool) {
+	if ok = e.IsComment() || e.IsFile(); ok {
+		if e.body != nil {
+			size = len(*e.body)
+		}
+	}
+	return
 }
 
 func (e *entry) IsComment() bool {
