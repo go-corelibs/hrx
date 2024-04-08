@@ -320,9 +320,9 @@ func (a *archive) ParseHRX(path string) (parsed Archive, err error) {
 
 func (a *archive) Entry(pathname string) Entry {
 	if this, ok := a.lookup[pathname]; ok {
-		return this
+		return this.clone()
 	} else if this, ok = a.lookup[pathname+"/"]; ok {
-		return this
+		return this.clone()
 	}
 	return nil
 }
