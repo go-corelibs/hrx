@@ -319,6 +319,8 @@ func (a *archive) ParseHRX(path string) (parsed Archive, err error) {
 }
 
 func (a *archive) Entry(pathname string) Entry {
+	a.mutex.RLock()
+	defer a.mutex.RUnlock()
 	if this, ok := a.lookup[pathname]; ok {
 		return this.clone()
 	} else if this, ok = a.lookup[pathname+"/"]; ok {
