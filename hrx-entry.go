@@ -104,6 +104,26 @@ func newEntry(line, boundary int, pathname, body string, err error) (e *entry) {
 	return e
 }
 
+func (e *entry) clone() (cloned *entry) {
+	cloned = &entry{
+		hrx:      e.hrx,
+		line:     e.line,
+		boundary: e.boundary,
+		err:      e.err,
+	}
+	mkr := func(v string) *string { return &v }
+	if e.pathname != nil {
+		cloned.pathname = mkr(*e.pathname)
+	}
+	if e.body != nil {
+		cloned.body = mkr(*e.body)
+	}
+	if e.comment != nil {
+		cloned.comment = mkr(*e.comment)
+	}
+	return
+}
+
 func (e *entry) Size() (size int, ok bool) {
 	if ok = e.IsComment() || e.IsFile(); ok {
 		if e.body != nil {
