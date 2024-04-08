@@ -107,6 +107,11 @@ type Archive interface {
 	// within this archive. List does not recurse into nested HRX files
 	List() (pathnames []string)
 
+	// Entries returns a list of all file and directory entries within this
+	// Archive instance. Entries does not recurse into embedded HRX Archive
+	// files
+	Entries() (entries []Entry)
+
 	// ParseHRX looks for the entry associated with the given pathname and if
 	// the pathname has the `.hrx` extension, attempts to parse the contents
 	// into a new Archive instance
@@ -341,6 +346,17 @@ func (a *archive) List() (pathnames []string) {
 	for _, item := range a.entries {
 		if item.GetPathname() != "" {
 			pathnames = append(pathnames, item.GetPathname())
+		}
+	}
+	return
+}
+
+func (a *archive) Entries() (entries []Entry) {
+	a.mutex.RLock()
+	defer a.mutex.RUnlock()
+	for _, item := range a.entries {
+		if !item.IsComment() {
+			entries = append(entries, item.clone())
 		}
 	}
 	return
