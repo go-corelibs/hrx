@@ -16,6 +16,7 @@ package hrx
 
 import (
 	"errors"
+	"os"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -23,6 +24,7 @@ import (
 
 func TestUtilities(t *testing.T) {
 	Convey("Package Utilities", t, func() {
+
 		Convey("AsError", func() {
 			err := errors.New("not an *Error")
 			v, ok := AsError(err)
@@ -37,6 +39,13 @@ func TestUtilities(t *testing.T) {
 			v, ok = AsError(err)
 			So(ok, ShouldBeTrue)
 			So(v, ShouldNotBeNil)
+		})
+
+		Convey("Error.Is", func() {
+			err := newError("test.hrx", 1, ErrInvalidUnicode, ErrMalformedInput)
+			So(err.Is(ErrInvalidUnicode), ShouldBeTrue)
+			So(err.Is(ErrMalformedInput), ShouldBeTrue)
+			So(err.Is(os.ErrNotExist), ShouldBeFalse)
 		})
 	})
 }

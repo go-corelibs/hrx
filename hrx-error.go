@@ -78,6 +78,12 @@ func newError(file string, line int, wrap, base error) (err *Error) {
 	}
 }
 
+func (e *Error) Is(err error) (ok bool) {
+	ok = errors.Is(e.Base, err) ||
+		errors.Is(e.Wrap, err)
+	return
+}
+
 func (e *Error) Error() string {
 	if e.Wrap != nil {
 		return fmt.Sprintf(`%s:%d  %v: %v`, e.File, e.Line, e.Base, e.Wrap)
