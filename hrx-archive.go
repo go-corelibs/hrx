@@ -256,10 +256,10 @@ func (a *archive) Set(pathname, body, comment string) (err error) {
 		a.entries = append(a.entries, this)
 		a.lookup[pathname] = this
 
-		a.report(this.GetPathname(), OpAppended)
+		a.report(this.GetPathname(), OpAppended, body, comment)
 	} else {
 		this.body = &body
-		a.report(this.GetPathname(), OpUpdated)
+		a.report(this.GetPathname(), OpUpdated, body, comment)
 	}
 	if comment != "" {
 		this.comment = &comment

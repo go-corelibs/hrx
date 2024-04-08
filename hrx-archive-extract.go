@@ -49,7 +49,7 @@ func (a *archive) ExtractTo(destination string, pathnames ...string) (err error)
 		for _, item := range a.entries {
 			if _, present := lookup[item.GetPathname()]; check && !present {
 				// skip; pathname not included
-				a.report(item.GetPathname(), OpSkipped)
+				a.report(item.GetPathname(), OpSkipped, item)
 				continue
 			}
 
