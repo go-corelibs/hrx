@@ -128,6 +128,8 @@ func (e *entry) Size() (size int, ok bool) {
 	if ok = e.IsComment() || e.IsFile(); ok {
 		if e.body != nil {
 			size = len(*e.body)
+		} else if e.comment != nil {
+			size = len(*e.comment)
 		}
 	}
 	return

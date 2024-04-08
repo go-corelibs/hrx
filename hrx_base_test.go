@@ -224,6 +224,12 @@ func TestBase(t *testing.T) {
 			parsed, err := e2.ParseHRX()
 			So(err, ShouldBeNil)
 			So(parsed, ShouldNotBeNil)
+			e3 := newEntry(1, a.GetBoundary(), "", "comment body", nil)
+			e3.comment = e3.body
+			e3.body = nil
+			s, ok = e3.Size()
+			So(ok, ShouldBeTrue)
+			So(s, ShouldEqual, len(*e3.comment))
 		})
 
 		Convey("Entries", func() {
