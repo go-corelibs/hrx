@@ -69,7 +69,7 @@ func AsError(err error) (e *Error, ok bool) {
 	return
 }
 
-func newError(file string, line int, wrap, base error) (err error) {
+func newError(file string, line int, wrap, base error) (err *Error) {
 	return &Error{
 		File: file,
 		Base: base,
