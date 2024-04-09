@@ -274,11 +274,11 @@ func (a *archive) Get(path string) (body, comment string, ok bool) {
 	defer a.mutex.RUnlock()
 	var this *entry
 	if this, ok = a.lookup[path]; ok {
-		if ok = this.body != nil; ok {
+		if this.body != nil {
 			body = *this.body
-			if this.comment != nil {
-				comment = *this.comment
-			}
+		}
+		if this.comment != nil {
+			comment = *this.comment
 		}
 	}
 	return

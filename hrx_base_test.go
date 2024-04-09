@@ -100,6 +100,29 @@ func TestBase(t *testing.T) {
 			ee = a.Set("invalid.utf8", "valid content", string([]byte{0xff, 0xfe, 0xfd}))
 			So(ee, ShouldNotBeNil)
 			So(ee.Error(), ShouldEqual, newError("entries.hrx", 3, ErrInvalidUnicode, ErrMalformedInput).Error())
+
+			Convey("directory comments", func() {
+				dca := New("dir-comments.hrx", "")
+				So(dca, ShouldNotBeNil)
+
+				So(dca.Set("empty-dir/", "", ""), ShouldBeNil)
+				body, comment, ok := dca.Get("empty-dir/")
+				So(ok, ShouldBeTrue)
+				So(body, ShouldEqual, "")
+				So(comment, ShouldEqual, "")
+
+				So(dca.Set("empty-dir/", "", "directory comment"), ShouldBeNil)
+				body, comment, ok = dca.Get("empty-dir/")
+				So(ok, ShouldBeTrue)
+				So(body, ShouldEqual, "")
+				So(comment, ShouldEqual, "directory comment")
+
+				So(dca.String(), ShouldEqual, `<=====>
+directory comment
+<=====> empty-dir/
+`)
+
+			})
 		})
 
 		Convey("Changing Boundary, Nested HRX", func() {
