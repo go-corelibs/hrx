@@ -3,6 +3,6 @@
 CORELIB_PKG := go-corelibs/hrx
 VERSION_TAGS += MAIN
 MAIN_MK_SUMMARY := ${CORELIB_PKG}
-MAIN_MK_VERSION := v1.1.1
+MAIN_MK_VERSION := v1.1.2
 
 include CoreLibs.mk
