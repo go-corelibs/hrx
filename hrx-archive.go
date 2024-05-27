@@ -189,10 +189,11 @@ func (a *archive) SetBoundary(size int) (err error) {
 				updated := ia.String()
 				item.body = &updated
 				a.report(item.GetPathname(), OpBoundary, a.boundary, size)
-				continue
 			}
 		}
-		return
+		if err != nil {
+			return
+		}
 	}
 
 	a.report("", OpBoundary, a.boundary, size)
