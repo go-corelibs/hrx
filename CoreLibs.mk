@@ -6,12 +6,44 @@ CORELIB_NAME := $(shell basename "${CORELIB_PKG}")
 
 VERSION_TAGS        += CORELIBS
 CORELIBS_MK_SUMMARY := Go-CoreLibs.mk
-CORELIBS_MK_VERSION := v0.1.17
+CORELIBS_MK_VERSION := v0.1.20
 
 GOPKG_KEYS          ?=
 GOPKG_AUTO_CORELIBS ?= true
 LOCAL_CORELIBS_PATH ?= ..
 
+CLEAN_FILES ?= coverage.{out,html} go_*.test
+
+CLEAN_FILES += ${BUILD_COMMANDS}
+
+GOTESTS_SKIP ?=
+_GOTEST_SKIP := $(shell \
+	echo "${GOTESTS_SKIP}" \
+		| perl -e '@s=();while(<>){s/^\s*(.+?)\s*$$/$$1/;chomp;push(@s,$$_);};print join("/",@s);' \
+)
+GOTESTS_ARGV ?= .
+GOTESTS_TAGS ?= all
+
+_GOTEST_TAGS := $(shell \
+	echo "${GOTESTS_TAGS}" \
+		| perl -pe 's/^\s+//ms;s/\s+$$//ms;s/\s+/\n/msg;' \
+		| perl -pe 's/\n/,/' \
+)
+
+COVER_PROFILE ?= coverage.out
+COVER_MODE    ?= atomic
+COVER_PKG     ?= ${GOTESTS_ARGV}
+
+CONVEY_HOST    ?= 0.0.0.0
+CONVEY_PORT    ?= 8080
+CONVEY_POLL    ?= 500ms
+CONVEY_DEPTH   ?= -1
+CONVEY_BROWSER ?= false
+CONVEY_EXCLUDE ?=
+_CONVEY_EXCLUDED := $(shell \
+	echo "${CONVEY_EXCLUDE}" \
+		| perl -e '@s=();while(<>){s/^\s*(.+?)\s*$$/$$1/;chomp;push(@s,$$_);};print join(",",@s);' \
+)
 
 .PHONY: help version
 .PHONY: local unlocal be-update tidy
@@ -56,6 +88,22 @@ endef
 
 define __list_corelibs_latest
 $(call __list_corelibs,@latest)
+endef
+
+define __go_test
+$(shell \
+	if [ -n "${_GOTEST_SKIP}" ]; then \
+		if [ -n "${_GOTEST_TAGS}" ]; then \
+			echo "go test -race -v -tags \"${_GOTEST_TAGS}\" -skip \"${_GOTEST_SKIP}\""; \
+		else \
+			echo "go test -race -v -skip \"${_GOTEST_SKIP}\""; \
+		fi; \
+	elif [ -n "${_GOTEST_TAGS}" ]; then \
+		echo "go test -race -v -tags \"${_GOTEST_TAGS}\" -skip \"${_GOTEST_SKIP}\""; \
+	else \
+		echo "go test -race -v -skip \"${_GOTEST_SKIP}\""; \
+	fi \
+)
 endef
 
 #
@@ -141,7 +189,7 @@ local: export FOUND_LIBS=$(call __list_corelibs)
 local:
 	@if [ -n "$${FOUND_PKGS}" -o -n "$${FOUND_LIBS}" ]; then \
 		for found in $${FOUND_LIBS}; do \
-			name=`basename $${found}`; \
+			name=`echo "$${found}" | perl -pe "s~^github.com/go-corelibs/~~;"`; \
 			echo "# go mod local go-corelibs/$${name}"; \
 			go mod edit -replace=$${found}=${LOCAL_CORELIBS_PATH}/$${name}; \
 		done; \
@@ -164,7 +212,7 @@ unlocal: export FOUND_LIBS=$(call __list_corelibs)
 unlocal:
 	@if [ -n "$${FOUND_PKGS}" -o -n "$${FOUND_LIBS}" ]; then \
 		for found in $${FOUND_LIBS}; do \
-			name=`basename $${found}`; \
+			name=`echo "$${found}" | perl -pe "s~^github.com/go-corelibs/~~;"`; \
 			echo "# go mod unlocal go-corelibs/$${name}"; \
 			go mod edit -dropreplace=$${found}; \
 		done; \
@@ -198,27 +246,38 @@ be-update:
 	fi
 
 tidy:
-	@go mod tidy
+	@${CMD} go mod tidy
 
 deps:
 	@echo "# go install goconvey"
-	@go install github.com/smartystreets/goconvey@latest
+	@${CMD} go install github.com/smartystreets/goconvey@latest
 	@echo "# go install govulncheck"
-	@go install golang.org/x/vuln/cmd/govulncheck@latest
+	@${CMD} go install golang.org/x/vuln/cmd/govulncheck@latest
 	@echo "# go install gocyclo"
-	@go install github.com/fzipp/gocyclo/cmd/gocyclo@latest
+	@${CMD} go install github.com/fzipp/gocyclo/cmd/gocyclo@latest
 	@echo "# go install ineffassign"
-	@go install github.com/gordonklaus/ineffassign@latest
+	@${CMD} go install github.com/gordonklaus/ineffassign@latest
 	@echo "# go install misspell"
-	@go install github.com/client9/misspell/cmd/misspell@latest
+	@${CMD} go install github.com/client9/misspell/cmd/misspell@latest
 	@echo "# go get ./..."
-	@go get ./...
+	@${CMD} go get ./...
 
 build:
-	@go build -v ./...
+	@if [ -n "${BUILD_COMMANDS}" ]; then \
+		for NAME in ${BUILD_COMMANDS}; do \
+			if [ -d "./cmd/$${NAME}" ]; then \
+				go build -v -o "$${NAME}" "./cmd/$${NAME}"; \
+			else \
+				echo "# package not found: ./cmd/$${NAME}"; \
+				false; \
+			fi; \
+		done; \
+	else \
+		go build -v ./...; \
+	fi
 
 clean:
-	@rm -fv coverage.{out,html}
+	@if [ -n "${CLEAN_FILES}" ]; then rm -fv ${CLEAN_FILES}; fi
 
 fmt:
 	@echo "# gofmt -s..."
@@ -229,16 +288,36 @@ fmt:
 		`find * -name "*.go"`
 
 test:
-	@go test -race -v ./...
+	@${CMD} $(call __go_test) ${GOTESTS_ARGV}
 
 coverage:
-	@go test -race -coverprofile=coverage.out -covermode=atomic -coverpkg=./... -v ./...
-	@go tool cover -html=coverage.out -o=coverage.html
-	@go tool cover -func=coverage.out
+	@${CMD} $(call __go_test) \
+		-coverprofile=${COVER_PROFILE} \
+		-covermode=${COVER_MODE} \
+		-coverpkg="${COVER_PKG}" \
+		-v ${GOTESTS_ARGV}
+	@${CMD} go tool cover -html=${COVER_PROFILE} -o=coverage.html
+	@${CMD} go tool cover -func=${COVER_PROFILE}
 
 goconvey:
-	@echo "# running goconvey... (press <CTRL+c> to stop)"
-	@goconvey -host=0.0.0.0 -launchBrowser=false -depth=-1
+	@echo "# running goconvey (${CONVEY_HOST}:${CONVEY_PORT};@${CONVEY_POLL})"
+	@echo "# (press <CTRL+c> to stop)"
+	@if [ -n "${_CONVEY_EXCLUDED}" ]; then \
+		${CMD} goconvey \
+			-host=${CONVEY_HOST} \
+			-port=${CONVEY_PORT} \
+			-poll=${CONVEY_POLL} \
+			-depth=${CONVEY_DEPTH} \
+			-launchBrowser=${CONVEY_BROWSER} \
+			-excludedDirs=${_CONVEY_EXCLUDED}; \
+	else \
+		${CMD} goconvey \
+			-host=${CONVEY_HOST} \
+			-port=${CONVEY_PORT} \
+			-poll=${CONVEY_POLL} \
+			-depth=${CONVEY_DEPTH} \
+			-launchBrowser=${CONVEY_BROWSER}; \
+	fi
 
 reportcard:
 	@echo "# code sanity and style report"
