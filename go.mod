@@ -1,6 +1,6 @@
 module github.com/go-corelibs/hrx
 
-go 1.21.6
+go 1.22.4
 
 require (
 	github.com/codeclysm/extract v2.2.0+incompatible
